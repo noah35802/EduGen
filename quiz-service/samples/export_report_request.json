@@ -1,0 +1,13 @@
+{
+  "quiz_title": "Quiz 1 - Networking Basics",
+  "class_name": "CS101",
+  "results": [
+    {"student_name": "Asha Roy", "student_email": "asha@example.com", "score": 8, "total": 10,
+     "time_taken_seconds": 612, "submitted_at": "2026-10-07 10:42"},
+    {"student_name": "Ravi Das", "student_email": "ravi@example.com", "score": 5, "total": 10,
+     "time_taken_seconds": 840, "submitted_at": "2026-10-07 10:51"}
+  ],
+  "question_stats": [
+    {"question": "Which layer handles routing?", "correct_count": 2, "total_attempts": 2}
+  ]
+}
