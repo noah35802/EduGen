@@ -7,7 +7,7 @@ from app.config import get_settings
 def get_embeddings() -> Embeddings:
     s = get_settings()
     if s.embedding_provider == "local":
-        # Free, runs on your machine. Needs: pip install langchain-huggingface sentence-transformers
+        # Free, runs on your machine (model downloads on first use, ~130 MB).
         from langchain_huggingface import HuggingFaceEmbeddings
 
         return HuggingFaceEmbeddings(model_name=s.local_embedding_model)

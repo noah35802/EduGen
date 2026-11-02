@@ -13,8 +13,9 @@ from app.retrieval.embeddings import get_embeddings
 @lru_cache
 def get_vector_store() -> Chroma:
     s = get_settings()
+    # Separate collection per embedding provider: vectors from different models are incompatible.
     return Chroma(
-        collection_name=s.collection_name,
+        collection_name=f"{s.collection_name}_{s.embedding_provider}",
         embedding_function=get_embeddings(),
         persist_directory=s.chroma_dir,
     )
