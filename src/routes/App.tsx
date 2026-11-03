@@ -1,13 +1,57 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { DashboardLayout } from "../components/layout/DashboardLayout";
-import { AdminActivityPage, AdminAnalyticsPage, AdminCoursesPage, AdminDashboard, AdminNotificationsPage, AdminSettingsPage, AdminStudentsPage, AdminSubjectsPage, AdminTeachersPage } from "../pages/admin/AdminPages";
-import { ForgotPasswordPage, LoginPage, RegisterPage } from "../pages/auth/AuthPages";
+import {
+  AdminActivityPage,
+  AdminAnalyticsPage,
+  AdminCoursesPage,
+  AdminDashboard,
+  AdminNotificationsPage,
+  AdminSettingsPage,
+  AdminStudentsPage,
+  AdminSubjectsPage,
+  AdminTeachersPage,
+} from "../pages/admin/AdminPages";
+import {
+  ForgotPasswordPage,
+  LoginPage,
+  RegisterPage,
+} from "../pages/auth/AuthPages";
 import { LandingPage } from "../pages/LandingPage";
-import { AINotesPage, AIQuizGeneratorPage, AITutorPage, FlashcardsPage, StudyPlannerPage } from "../pages/student/AIFeaturePages";
+import {
+  AINotesPage,
+  AIQuizGeneratorPage,
+  AITutorPage,
+  FlashcardsPage,
+  StudyPlannerPage,
+} from "../pages/student/AIFeaturePages";
 import { CourseDetailPage, MyCoursesPage } from "../pages/student/CoursesPages";
-import { AssignmentsPage, AttendancePage, NotificationsPage, PerformancePage, ProfilePage, RecommendationsPage, ResourcesPage, SettingsPage, SubjectsPage, QuizzesPage } from "../pages/student/StudentUtilityPages";
+import {
+  AssignmentsPage,
+  AttendancePage,
+  NotificationsPage,
+  PerformancePage,
+  ProfilePage,
+  RecommendationsPage,
+  ResourcesPage,
+  SettingsPage,
+  SubjectsPage,
+  QuizzesPage,
+} from "../pages/student/StudentUtilityPages";
 import { StudentDashboard } from "../pages/student/StudentDashboard";
-import { TeacherAIQuizGeneratorPage, TeacherAIReportsPage, TeacherAnalyticsPage, TeacherAssignmentsPage, TeacherCoursesPage, TeacherDashboard, TeacherNotificationsPage, TeacherProfilePage, TeacherSettingsPage, TeacherStudentsPage, TeacherUploadPage } from "../pages/teacher/TeacherPages";
+import {
+  TeacherAIQuizGeneratorPage,
+  TeacherAIReportsPage,
+  TeacherAnalyticsPage,
+  TeacherAssignmentsPage,
+  TeacherQuizzesPage,
+  TeacherCoursesPage,
+  TeacherDashboard,
+  TeacherNotificationsPage,
+  TeacherProfilePage,
+  TeacherSettingsPage,
+  TeacherStudentsPage,
+  TeacherUploadPage,
+} from "../pages/teacher/TeacherPages";
 
 export function App() {
   return (
@@ -44,7 +88,7 @@ export function App() {
         <Route path="students" element={<TeacherStudentsPage />} />
         <Route path="notes" element={<TeacherUploadPage />} />
         <Route path="assignments" element={<TeacherAssignmentsPage />} />
-        <Route path="quizzes" element={<TeacherAssignmentsPage />} />
+        <Route path="quizzes" element={<TeacherQuizzesPage />} />
         <Route path="ai-generator" element={<TeacherAIQuizGeneratorPage />} />
         <Route path="analytics" element={<TeacherAnalyticsPage />} />
         <Route path="ai-reports" element={<TeacherAIReportsPage />} />

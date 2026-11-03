@@ -14,6 +14,8 @@ import { StatCard } from "../../components/ui/StatCard";
 import { assignments, courses, students, weakTopics } from "../../data/mockData";
 import { AIQuizGeneratorPage } from "../student/AIFeaturePages";
 import { NotificationsPage, ProfilePage, ResourcesPage, SettingsPage } from "../student/StudentUtilityPages";
+import { useNavigate } from "react-router-dom";
+import { EmptyState } from "../../components/ui/EmptyState";
 
 export function TeacherDashboard() {
   return (
@@ -62,6 +64,66 @@ export function TeacherAssignmentsPage() {
       <PageHeader title="Assignments" subtitle="Create assignments and review student submissions." actions={<Button onClick={() => setMessage("Assignment creation form opened for demo.")}><Plus size={18} /> Create assignment</Button>} />
       <DataTable data={assignments} columns={[{ key: "title", header: "Title" }, { key: "subject", header: "Subject" }, { key: "dueDate", header: "Due date" }, { key: "status", header: "Status" }, { key: "id", header: "Actions", render: (row) => <Button variant="secondary" onClick={() => setMessage(`Reviewing ${row.title}.`)}>Review</Button> }]} />
       {message && <p className="rounded-md bg-emerald-50 p-3 text-sm text-emerald-700">{message}</p>}
+    </>
+  );
+}
+
+
+export function TeacherQuizzesPage() {
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <PageHeader
+        title="Quiz Management"
+        subtitle="Create, manage and publish quizzes for your students."
+        actions={
+          <Button onClick={() => navigate("/teacher/ai-generator")}>
+            <Plus size={18} />
+            Generate with AI
+          </Button>
+        }
+      />
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card>
+          <Badge tone="ai">AI-powered</Badge>
+          <h2 className="mt-3 text-lg font-semibold">
+            AI Quiz Generator
+          </h2>
+          <p className="mt-2 text-sm text-slate-500">
+            Upload study materials and generate multiple-choice
+            questions automatically.
+          </p>
+          <Button
+            className="mt-4"
+            onClick={() => navigate("/teacher/ai-generator")}
+          >
+            Open AI Generator
+          </Button>
+        </Card>
+
+        <Card>
+          <Badge tone="success">Quiz Management</Badge>
+          <h2 className="mt-3 text-lg font-semibold">
+            Published Quizzes
+          </h2>
+          <p className="mt-2 text-sm text-slate-500">
+            Manage quizzes that students can access and attempt.
+          </p>
+        </Card>
+      </div>
+
+      <Card>
+        <h2 className="mb-4 font-semibold">
+          Your Published Quizzes
+        </h2>
+
+        <EmptyState
+          title="No published quizzes yet"
+          description="Once you review and publish a quiz, it will appear here."
+        />
+      </Card>
     </>
   );
 }

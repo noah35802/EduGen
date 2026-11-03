@@ -8,3 +8,13 @@ vite.out.log
 vite.err.log
 vite.config.js
 vite.config.d.ts
+quiz-service/.venv/
+.env.*
+!.env.example
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+dist/
+build/

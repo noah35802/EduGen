@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/courses');
 const assignmentRoutes = require('./routes/assignments');
 const aiRoutes = require('./routes/ai');
+const quizRoutes = require('./routes/quizzes');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/assignments', assignmentRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/quizzes', quizRoutes);
 
 const PORT = process.env.PORT || 5000;
 

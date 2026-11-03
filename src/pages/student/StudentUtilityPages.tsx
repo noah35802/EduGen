@@ -65,27 +65,227 @@ export function AssignmentsPage() {
   );
 }
 
+
 export function QuizzesPage() {
+  const questions = [
+    {
+      question: "What is the time complexity of Merge Sort?",
+      options: ["O(n)", "O(n log n)", "O(n²)", "O(log n)"],
+      correct: 1,
+      explanation: "Merge Sort divides the array recursively and merges sorted halves, resulting in O(n log n) time."
+    },
+    {
+      question: "Which data structure follows FIFO?",
+      options: ["Stack", "Queue", "Tree", "Graph"],
+      correct: 1,
+      explanation: "A Queue follows First In, First Out (FIFO)."
+    },
+    {
+      question: "What is a primary key in DBMS?",
+      options: [
+        "A key that allows duplicate values",
+        "A key used only for sorting",
+        "A unique identifier for each record",
+        "A foreign reference"
+      ],
+      correct: 2,
+      explanation: "A primary key uniquely identifies every record in a database table."
+    }
+  ];
+
+  const [started, setStarted] = useState(false);
   const [question, setQuestion] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [review, setReview] = useState<number[]>([]);
   const [done, setDone] = useState(false);
-  const questions = ["What is the time complexity of Merge Sort?", "Which data structure uses FIFO?", "What is a primary key?"];
+  const [showSubmit, setShowSubmit] = useState(false);
+
+  const current = questions[question];
+  const score = questions.filter(
+    (q, i) => answers[i] === q.correct
+  ).length;
+
+  const selectAnswer = (index: number) => {
+    setAnswers(prev => ({ ...prev, [question]: index }));
+  };
+
+  const toggleReview = () => {
+    setReview(prev =>
+      prev.includes(question)
+        ? prev.filter(i => i !== question)
+        : [...prev, question]
+    );
+  };
+
+  const submitQuiz = () => {
+    setDone(true);
+    setShowSubmit(false);
+  };
+
   return (
     <>
-      <PageHeader title="Quiz System" subtitle="Timed quiz with review navigator and result analysis." />
-      {!done ? (
+      <PageHeader
+        title="My Quizzes"
+        subtitle="Attempt quizzes and track your learning performance."
+      />
+
+      {!started ? (
         <Card>
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><Badge tone="warning">Timer 09:42</Badge><span className="text-sm">Question {question + 1} of {questions.length}</span></div>
-          <ProgressBar value={((question + 1) / questions.length) * 100} />
-          <h2 className="mt-6 text-lg font-semibold">{questions[question]}</h2>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">{["O(n)", "O(n log n)", "O(n squared)", "O(log n)"].map((option) => <button key={option} className="rounded-md border border-slate-200 p-4 text-left hover:border-brand-500 dark:border-slate-700">{option}</button>)}</div>
-          <div className="mt-6 flex flex-wrap gap-2"><Button variant="secondary" onClick={() => setQuestion(Math.max(0, question - 1))}>Previous</Button><Button onClick={() => question === questions.length - 1 ? setDone(true) : setQuestion(question + 1)}>Next</Button><Button variant="secondary">Mark for review</Button></div>
+          <Badge tone="ai">Practice Quiz</Badge>
+          <h2 className="mt-3 text-xl font-bold">Data Structures & DBMS</h2>
+          <p className="mt-2 text-sm text-slate-500">
+            Sample quiz containing 3 multiple-choice questions.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-4 text-sm">
+            <span>3 Questions</span>
+            <span>5 Minutes</span>
+            <span>Easy</span>
+          </div>
+          <Button className="mt-5" onClick={() => setStarted(true)}>
+            Start Quiz
+          </Button>
         </Card>
+      ) : !done ? (
+        <div className="grid gap-5 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <Card>
+              <div className="flex justify-between gap-3">
+                <Badge tone="warning">Practice Mode</Badge>
+                <span className="text-sm">
+                  Question {question + 1} of {questions.length}
+                </span>
+              </div>
+
+              <ProgressBar
+                value={((question + 1) / questions.length) * 100}
+              />
+
+              <h2 className="mt-6 text-lg font-semibold">
+                {current.question}
+              </h2>
+
+              <div className="mt-5 grid gap-3">
+                {current.options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => selectAnswer(index)}
+                    className={`rounded-lg border p-4 text-left transition ${
+                      answers[question] === index
+                        ? "border-brand-600 bg-brand-50 dark:bg-slate-800"
+                        : "border-slate-200 hover:border-brand-500 dark:border-slate-700"
+                    }`}
+                  >
+                    <span className="mr-3 font-semibold">
+                      {String.fromCharCode(65 + index)}.
+                    </span>
+                    {option}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-2">
+                <Button
+                  variant="secondary"
+                  disabled={question === 0}
+                  onClick={() => setQuestion(q => q - 1)}
+                >
+                  Previous
+                </Button>
+
+                <Button variant="secondary" onClick={toggleReview}>
+                  {review.includes(question)
+                    ? "Remove Review"
+                    : "Mark for Review"}
+                </Button>
+
+                {question < questions.length - 1 ? (
+                  <Button onClick={() => setQuestion(q => q + 1)}>
+                    Next
+                  </Button>
+                ) : (
+                  <Button onClick={() => setShowSubmit(true)}>
+                    Submit Quiz
+                  </Button>
+                )}
+              </div>
+            </Card>
+          </div>
+
+          <Card>
+            <h3 className="font-semibold">Question Navigator</h3>
+            <div className="mt-4 grid grid-cols-3 gap-3">
+              {questions.map((_, i) => (
+                <Button
+                  key={i}
+                  variant={question === i ? "primary" : "secondary"}
+                  onClick={() => setQuestion(i)}
+                >
+                  {i + 1}
+                </Button>
+              ))}
+            </div>
+
+            <div className="mt-5 space-y-2 text-sm text-slate-500">
+              <p>Answered: {Object.keys(answers).length}</p>
+              <p>Unanswered: {questions.length - Object.keys(answers).length}</p>
+              <p>Marked for review: {review.length}</p>
+            </div>
+          </Card>
+        </div>
       ) : (
         <Card>
-          <h2 className="text-xl font-bold">Quiz Result</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-4"><StatMini label="Score" value="84%" /><StatMini label="Correct" value="21" /><StatMini label="Incorrect" value="4" /><StatMini label="Time" value="18m" /></div>
-          <div className="mt-6 grid gap-3">{weakTopics.slice(0, 4).map((topic) => <div key={topic.topic}><div className="mb-1 flex justify-between text-sm"><span>{topic.topic}</span><span>{topic.score}%</span></div><ProgressBar value={topic.score} /></div>)}</div>
-          <AIInsightCard title="AI Insight">Your performance indicates that Graph Algorithms and Dynamic Programming require additional practice.</AIInsightCard>
+          <h2 className="text-xl font-bold">Quiz Results</h2>
+          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            <StatMini label="Score" value={`${Math.round(score / questions.length * 100)}%`} />
+            <StatMini label="Correct" value={String(score)} />
+            <StatMini label="Incorrect" value={String(questions.length - score)} />
+          </div>
+
+          <div className="mt-6 space-y-4">
+            {questions.map((q, i) => (
+              <div key={i} className="rounded-lg border p-4 dark:border-slate-700">
+                <h3 className="font-semibold">
+                  {i + 1}. {q.question}
+                </h3>
+                <p className="mt-2 text-sm">
+                  Your answer: {answers[i] !== undefined
+                    ? q.options[answers[i]]
+                    : "Not answered"}
+                </p>
+                <p className="mt-1 text-sm text-emerald-600">
+                  Correct answer: {q.options[q.correct]}
+                </p>
+                <p className="mt-2 text-sm text-slate-500">
+                  {q.explanation}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <Button className="mt-5" onClick={() => {
+            setStarted(false);
+            setDone(false);
+            setQuestion(0);
+            setAnswers({});
+            setReview([]);
+          }}>
+            Back to Quizzes
+          </Button>
+        </Card>
+      )}
+
+      {showSubmit && (
+        <Card>
+          <h3 className="font-semibold">Submit this quiz?</h3>
+          <p className="mt-2 text-sm text-slate-500">
+            You have answered {Object.keys(answers).length} of {questions.length} questions.
+          </p>
+          <div className="mt-4 flex gap-2">
+            <Button onClick={submitQuiz}>Confirm Submit</Button>
+            <Button variant="secondary" onClick={() => setShowSubmit(false)}>
+              Cancel
+            </Button>
+          </div>
         </Card>
       )}
     </>

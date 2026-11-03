@@ -41,7 +41,7 @@ export const roleNavigation = {
     ["Dashboard", "/teacher/dashboard", LayoutDashboard],
     ["My Courses", "/teacher/courses", BookOpen],
     ["Students", "/teacher/students", Users],
-    ["Notes", "/teacher/resources", FileText],
+    ["Notes", "/teacher/notes", FileText],
     ["Assignments", "/teacher/assignments", ClipboardCheck],
     ["Quizzes", "/teacher/quizzes", FileText],
     ["AI Quiz Generator", "/teacher/ai-generator", Brain],
