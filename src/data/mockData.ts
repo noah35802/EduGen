@@ -1,4 +1,4 @@
-import { Assignment, ChatMessage, Course, NotificationItem, User } from "../types";
+import { Assignment, Course, NotificationItem, User } from "../types";
 
 export const demoUsers: Record<string, User> = {
   student: {
@@ -126,16 +126,6 @@ export const teachers = [
   { id: "t1", name: "Kunal Anand", email: "teacher@edugen.ai", department: "CSE", courses: 3, status: "Active" },
   { id: "t2", name: "Demo", email: "demo.teacher1@edugen.ai", department: "CSE", courses: 2, status: "Active" },
   { id: "t3", name: "Demo", email: "demo.teacher2@edugen.ai", department: "IT", courses: 4, status: "Active" },
-];
-
-export const initialChat: ChatMessage[] = [
-  { id: "c1", role: "student", content: "Explain Merge Sort." },
-  {
-    id: "c2",
-    role: "ai",
-    content:
-      "Merge Sort divides an array into halves, sorts each half recursively, and merges them back. Time complexity is O(n log n). Key idea: break the problem down until each list has one item, then combine sorted lists.",
-  },
 ];
 
 export const resources = [

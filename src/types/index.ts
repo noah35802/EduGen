@@ -38,9 +38,3 @@ export interface NotificationItem {
   read: boolean;
   tone: "info" | "success" | "warning";
 }
-
-export interface ChatMessage {
-  id: string;
-  role: "student" | "ai";
-  content: string;
-}

@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     # ---- Chat LLM (any OpenAI-compatible API: Groq by default) ----
     llm_api_key: str = ""
     llm_base_url: str = "https://api.groq.com/openai/v1"
-    llm_model: str = "llama-3.3-70b-versatile"
+    llm_model: str = "openai/gpt-oss-120b"
 
     # ---- Embeddings: local (free, default) or openai ----
     embedding_provider: str = "local"  # local | openai
@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     top_k: int = 6
     max_upload_mb: int = 20
     max_history_turns: int = 6
+    max_private_docs_per_user: int = 0
 
 
 @lru_cache

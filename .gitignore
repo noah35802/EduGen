@@ -1,4 +1,8 @@
 node_modules
+rag_service/data/chroma/
+*.db
+*.sqlite
+*.sqlite3
 dist
 .env
 .env.local
@@ -15,6 +19,7 @@ node_modules/
 .venv/
 venv/
 __pycache__/
+.pytest_cache/
 *.pyc
 dist/
 build/

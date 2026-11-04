@@ -17,6 +17,7 @@ class ChatRequest(BaseModel):
     session_id: Optional[str] = None
     # Optionally restrict the answer to specific documents
     doc_ids: Optional[list[str]] = None
+    mode: Literal["strict", "hybrid"] = "strict"
 
 
 class Source(BaseModel):
@@ -31,6 +32,7 @@ class ChatResponse(BaseModel):
     answer: str
     sources: list[Source]
     session_id: str
+    grounded: bool = False
 
 
 class DocumentInfo(BaseModel):

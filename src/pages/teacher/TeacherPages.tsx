@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BarChart3, FileUp, Plus, Users, ClipboardCheck, CalendarCheck } from "lucide-react";
+import { BarChart3, Plus, Users, ClipboardCheck, CalendarCheck } from "lucide-react";
 import { AIInsightCard } from "../../components/ai/AIComponents";
 import { ActivityAreaChart, DistributionChart, PerformanceLineChart, SubjectBarChart } from "../../components/charts/Charts";
 import { PageHeader } from "../../components/layout/PageHeader";
@@ -16,6 +16,7 @@ import { AIQuizGeneratorPage } from "../student/AIFeaturePages";
 import { NotificationsPage, ProfilePage, ResourcesPage, SettingsPage } from "../student/StudentUtilityPages";
 import { useNavigate } from "react-router-dom";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { CourseMaterialsManager } from "../../components/courses/CourseMaterialsManager";
 
 export function TeacherDashboard() {
   return (
@@ -129,13 +130,10 @@ export function TeacherQuizzesPage() {
 }
 
 export function TeacherUploadPage() {
-  const [processing, setProcessing] = useState(false);
-  const [action, setAction] = useState("");
   return (
     <>
       <PageHeader title="Resources" subtitle="Upload PDF, PPT, DOC and process them with AI." />
-      <Card className="border-dashed text-center"><FileUp className="mx-auto text-brand-600" size={34} /><h2 className="mt-3 font-semibold">Teacher file upload</h2><p className="mt-1 text-sm text-slate-500">Accepted: PDF, PPT, PPTX, DOC, DOCX</p><Button className="mt-4" onClick={() => setProcessing(true)}>Upload file</Button></Card>
-      {processing && <Card><h2 className="font-semibold">Processing status</h2><ProgressBar className="mt-4" value={72} /><div className="mt-4 flex flex-wrap gap-2"><Button onClick={() => setAction("Summary generated for uploaded file.")}>Generate Summary</Button><Button variant="secondary" onClick={() => setAction("Quiz generated for uploaded file.")}>Generate Quiz</Button><Button variant="secondary" onClick={() => setAction("Flashcards generated for uploaded file.")}>Generate Flashcards</Button></div>{action && <p className="mt-3 rounded-md bg-emerald-50 p-3 text-sm text-emerald-700">{action}</p>}</Card>}
+      <CourseMaterialsManager />
       <ResourcesPage />
     </>
   );
