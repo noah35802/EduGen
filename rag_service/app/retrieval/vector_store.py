@@ -22,11 +22,11 @@ def get_vector_store() -> Chroma:
 
 
 def build_access_filter(user_id: str, course_id: str, doc_ids: Optional[list[str]] = None) -> dict:
-    """A student sees: shared docs of this course (or global) + their OWN private docs for this course."""
+    """A student sees this course's shared docs plus their own private docs in any course."""
     access = {
         "$or": [
             {"$and": [{"scope": "shared"}, {"course_id": {"$in": [course_id, "global"]}}]},
-            {"$and": [{"scope": "private"}, {"user_id": user_id}, {"course_id": course_id}]},
+            {"$and": [{"scope": "private"}, {"user_id": user_id}]},
         ]
     }
     if doc_ids:

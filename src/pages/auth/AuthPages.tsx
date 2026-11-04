@@ -5,9 +5,13 @@ import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { Input, Label, Select } from "../../components/ui/Input";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { loginDemo, loginWithEmail } from "../../store/slices/authSlice";
+import {
+  clearAuthError,
+  loginDemo,
+  loginWithEmail,
+  registerWithEmail,
+} from "../../store/slices/authSlice";
 import { Role } from "../../types";
-import { registerWithEmail } from "../../store/slices/authSlice";
 
 function AuthShell({
   title,
@@ -54,10 +58,11 @@ export function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
-  const loading = useAppSelector((state) => state.auth.status === "loading");
-  const [email, setEmail] = useState("student@edugen.ai");
+  const { error, status } = useAppSelector((state) => state.auth);
+  const loading = status === "loading";
+  const [email, setEmail] = useState("");
   const [toast, setToast] = useState("");
-  const [password, setPassword] = useState("password123");
+  const [password, setPassword] = useState("");
 
   if (user) return <Navigate to={`/${user.role}/dashboard`} replace />;
 
@@ -65,7 +70,7 @@ export function LoginPage() {
     event.preventDefault();
     const action = await dispatch(loginWithEmail({ email, password }));
     if (loginWithEmail.fulfilled.match(action))
-      navigate(`/${action.payload.role}/dashboard`);
+      navigate(`/${action.payload.user.role}/dashboard`);
   }
 
   async function demo(role: Role) {
@@ -112,6 +117,11 @@ export function LoginPage() {
           {loading ? "Signing in..." : "Login"}
         </Button>
       </form>
+      {error && (
+        <p role="alert" className="mt-3 rounded-md bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </p>
+      )}
       <div className="mt-5 grid gap-2">
         <Button variant="secondary" onClick={() => demo("student")}>
           <UserRound size={18} /> Continue as Student
@@ -142,45 +152,34 @@ export function LoginPage() {
 export function RegisterPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { error: authError, status } = useAppSelector((state) => state.auth);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<"student" | "teacher">("student");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [validationError, setValidationError] = useState("");
+  const loading = status === "loading";
 
   async function handleRegister(event: FormEvent) {
     event.preventDefault();
-    setError("");
+    setValidationError("");
+    dispatch(clearAuthError());
 
     if (password.length < 8) {
-      setError("Password must contain at least 8 characters.");
+      setValidationError("Password must contain at least 8 characters.");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setValidationError("Passwords do not match.");
       return;
     }
 
-    setLoading(true);
-
-    try {
-      const action = await dispatch(
-        registerWithEmail({ name, email, password, role })
-      );
-
-      if (registerWithEmail.fulfilled.match(action)) {
-        navigate(`/${action.payload.role}/dashboard`);
-      } else {
-        setError(action.error.message || "Registration failed.");
-      }
-    } catch {
-      setError("Unable to connect to the server.");
-    } finally {
-      setLoading(false);
+    const action = await dispatch(registerWithEmail({ name, email, password, role }));
+    if (registerWithEmail.fulfilled.match(action)) {
+      navigate(`/${action.payload.user.role}/dashboard`);
     }
   }
 
@@ -244,9 +243,9 @@ export function RegisterPage() {
           </Select>
         </div>
 
-        {error && (
+        {(validationError || authError) && (
           <p className="rounded-md bg-red-50 p-3 text-sm text-red-700">
-            {error}
+            {validationError || authError}
           </p>
         )}
 

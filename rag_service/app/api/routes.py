@@ -37,6 +37,15 @@ def ingest(
             shutil.copyfileobj(file.file, out)
         if dest.stat().st_size > s.max_upload_mb * 1024 * 1024:
             raise HTTPException(413, f"File larger than {s.max_upload_mb} MB")
+        if scope == "private" and s.max_private_docs_per_user > 0:
+            docs = vector_store.list_documents(user_id)
+            private_count = sum(1 for doc in docs if doc["scope"] == "private")
+            if private_count >= s.max_private_docs_per_user:
+                raise HTTPException(
+                    429,
+                    f"Private document limit reached ({s.max_private_docs_per_user})",
+                    headers={"X-Private-Document-Limit": str(s.max_private_docs_per_user)},
+                )
         try:
             doc_id, n = ingest_file(
                 dest, original_name=file.filename, user_id=user_id, course_id=course_id, scope=scope
@@ -54,6 +63,7 @@ def chat(req: ChatRequest):
         course_id=req.course_id,
         session_id=req.session_id,
         doc_ids=req.doc_ids,
+        mode=req.mode,
     )
 
 
@@ -63,14 +73,15 @@ def documents(user_id: str, course_id: Optional[str] = None):
 
 
 @router.delete("/documents/{doc_id}")
-def delete_document(doc_id: str, user_id: str):
+def delete_document(doc_id: str, user_id: str, allow_shared: bool = False):
     metas = vector_store.get_doc_metadatas({"doc_id": doc_id})
     if not metas:
         raise HTTPException(404, "Document not found")
     meta = metas[0]
     if meta.get("scope") == "shared":
-        raise HTTPException(403, "Shared documents are managed via scripts/ingest_shared.py")
-    if meta.get("user_id") != user_id:
+        if not allow_shared:
+            raise HTTPException(403, "Shared documents cannot be deleted by this request")
+    elif meta.get("user_id") != user_id:
         raise HTTPException(403, "You can only delete your own documents")
     vector_store.delete_document(doc_id)
     return {"deleted": doc_id}

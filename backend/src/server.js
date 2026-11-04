@@ -1,7 +1,10 @@
 
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+const User = require('./models/userModel');
 
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/courses');
@@ -27,8 +30,18 @@ app.use('/api/quizzes', quizRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Backend running on port ${PORT}`);
-});
+async function startServer() {
+  try {
+    await User.initialize();
+    app.listen(PORT, () => {
+      console.log(`Backend running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to initialize the authentication database:', error);
+    process.exitCode = 1;
+  }
+}
+
+startServer();
 
 module.exports = app;

@@ -35,4 +35,7 @@ router.delete(
   aiController.deleteDocument
 );
 
+router.use('/tutor', require('./aiTutor'));
+router.use('/materials', require('./aiTutorMaterials'));
+
 module.exports = router;

@@ -9,9 +9,19 @@ from app.retrieval import embeddings as emb_module
 
 
 class FakeLLM:
-    def invoke(self, _):
+    def invoke(self, messages):
         class R:
             content = "Fake answer [1]"
+
+        if (
+            isinstance(messages, list)
+            and "general knowledge" in messages[0].content
+            and messages[0].content.rstrip().endswith("Context:")
+        ):
+            class GeneralAnswer:
+                content = "Not from your materials. A process is a running program."
+
+            return GeneralAnswer()
         return R()
 
 
@@ -57,6 +67,19 @@ def test_isolation_between_students_and_shared(env):
     assert names == {"a.txt", "s.txt"}  # never b.txt
 
 
+def test_private_documents_are_available_across_courses_but_not_to_other_users(env):
+    from app.ingestion.pipeline import ingest_file
+    from app.retrieval import vector_store
+
+    private = _txt(env, "private.txt", "Private notes about operating system scheduling.")
+    ingest_file(private, original_name="private.txt", user_id="alice", course_id="global")
+
+    alice = vector_store.build_access_filter("alice", "os")
+    bob = vector_store.build_access_filter("bob", "os")
+    assert vector_store.search("operating system scheduling", 10, alice)
+    assert vector_store.search("operating system scheduling", 10, bob) == []
+
+
 def test_chat_returns_sources_and_handles_empty(env):
     from app.generation.chain import answer_question
     from app.ingestion.pipeline import ingest_file
@@ -70,6 +93,79 @@ def test_chat_returns_sources_and_handles_empty(env):
     # follow-up works with history (goes through condense step)
     res2 = answer_question("and where?", user_id="alice", course_id="BIO", session_id="s1")
     assert res2.session_id == "s1"
+
+
+def test_hybrid_chat_reports_general_answer_as_ungrounded(env):
+    from app.generation.chain import answer_question
+
+    result = answer_question(
+        "What is a process?",
+        user_id="alice",
+        course_id="os",
+        mode="hybrid",
+    )
+    assert result.answer.startswith("Not from your materials.")
+    assert result.sources == []
+    assert result.grounded is False
+
+
+def test_hybrid_chat_reports_citations_as_grounded(env):
+    from app.generation.chain import answer_question
+    from app.ingestion.pipeline import ingest_file
+
+    ingest_file(
+        _txt(env, "process.txt", "A process is a program in execution."),
+        original_name="process.txt",
+        user_id="alice",
+        course_id="os",
+    )
+    result = answer_question("What is a process?", user_id="alice", course_id="os", mode="hybrid")
+    assert result.grounded is True
+    assert result.sources[0].filename == "process.txt"
+
+
+def test_shared_document_delete_requires_explicit_permission(env):
+    from fastapi.testclient import TestClient
+    from app.ingestion.pipeline import ingest_file
+    from app.main import app
+
+    doc_id, _ = ingest_file(
+        _txt(env, "shared.txt", "Shared course material."),
+        original_name="shared.txt",
+        user_id="system",
+        course_id="os",
+        scope="shared",
+    )
+    client = TestClient(app)
+    assert client.delete(
+        f"/api/v1/documents/{doc_id}", params={"user_id": "admin"}
+    ).status_code == 403
+    assert client.delete(
+        f"/api/v1/documents/{doc_id}",
+        params={"user_id": "admin", "allow_shared": "true"},
+    ).status_code == 200
+
+
+def test_optional_private_document_cap(env, monkeypatch):
+    from fastapi.testclient import TestClient
+    from app import config
+    from app.main import app
+
+    monkeypatch.setenv("MAX_PRIVATE_DOCS_PER_USER", "1")
+    config.get_settings.cache_clear()
+    client = TestClient(app)
+    first = client.post(
+        "/api/v1/ingest",
+        files={"file": ("first.txt", b"First private document")},
+        data={"user_id": "alice", "scope": "private"},
+    )
+    second = client.post(
+        "/api/v1/ingest",
+        files={"file": ("second.txt", b"Second private document")},
+        data={"user_id": "alice", "scope": "private"},
+    )
+    assert first.status_code == 200
+    assert second.status_code == 429
 
 
 def test_api_ingest_list_delete(env):

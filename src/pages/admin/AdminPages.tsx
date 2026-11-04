@@ -9,6 +9,7 @@ import { DataTable } from "../../components/ui/DataTable";
 import { StatCard } from "../../components/ui/StatCard";
 import { courses, students, teachers } from "../../data/mockData";
 import { NotificationsPage, SettingsPage } from "../student/StudentUtilityPages";
+import { CourseMaterialsManager } from "../../components/courses/CourseMaterialsManager";
 
 export function AdminDashboard() {
   return (
@@ -54,6 +55,7 @@ export function AdminCoursesPage() {
       <PageHeader title="Courses" subtitle="Manage courses, teachers, enrollment and status." />
       <DataTable data={courses.map((course) => ({ ...course, teacher: course.instructor, studentCount: course.students ?? 0 }))} columns={[{ key: "title", header: "Course" }, { key: "teacher", header: "Teacher" }, { key: "studentCount", header: "Students" }, { key: "status", header: "Status" }, { key: "id", header: "Actions", render: (row) => <Actions label={row.title} onAction={setMessage} /> }]} />
       {message && <p className="rounded-md bg-emerald-50 p-3 text-sm text-emerald-700">{message}</p>}
+      <CourseMaterialsManager />
     </>
   );
 }

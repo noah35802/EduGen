@@ -18,12 +18,11 @@ import {
 } from "../pages/auth/AuthPages";
 import { LandingPage } from "../pages/LandingPage";
 import {
-  AINotesPage,
   AIQuizGeneratorPage,
-  AITutorPage,
   FlashcardsPage,
   StudyPlannerPage,
 } from "../pages/student/AIFeaturePages";
+import { AITutorPage } from "../pages/student/AITutorPage";
 import { CourseDetailPage, MyCoursesPage } from "../pages/student/CoursesPages";
 import {
   AssignmentsPage,
@@ -70,7 +69,7 @@ export function App() {
         <Route path="assignments" element={<AssignmentsPage />} />
         <Route path="quizzes" element={<QuizzesPage />} />
         <Route path="ai-tutor" element={<AITutorPage />} />
-        <Route path="ai-notes" element={<AINotesPage />} />
+        <Route path="ai-notes" element={<Navigate to="/student/ai-tutor" replace />} />
         <Route path="flashcards" element={<FlashcardsPage />} />
         <Route path="study-planner" element={<StudyPlannerPage />} />
         <Route path="recommendations" element={<RecommendationsPage />} />

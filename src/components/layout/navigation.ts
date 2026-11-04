@@ -28,7 +28,6 @@ export const roleNavigation = {
     ["Quizzes", "/student/quizzes", FileText],
     ["AI Tutor", "/student/ai-tutor", MessageCircle],
     ["Study Planner", "/student/study-planner", Calendar],
-    ["AI Notes", "/student/ai-notes", Brain],
     ["Flashcards", "/student/flashcards", Sparkles],
     ["Recommendations", "/student/recommendations", GraduationCap],
     ["Performance", "/student/performance", BarChart3],

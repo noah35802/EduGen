@@ -19,7 +19,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
     const value = query.toLowerCase();
     return [
       ...courses.filter((item) => item.title.toLowerCase().includes(value)).map((item) => ({ group: "Courses", label: item.title, to: `/${user?.role ?? "student"}/courses` })),
-      ...resources.filter((item) => item.title.toLowerCase().includes(value)).map((item) => ({ group: "Notes", label: item.title, to: user?.role === "teacher" ? "/teacher/resources" : "/student/ai-notes" })),
+      ...resources.filter((item) => item.title.toLowerCase().includes(value)).map((item) => ({ group: "Notes", label: item.title, to: user?.role === "teacher" ? "/teacher/resources" : "/student/ai-tutor" })),
       ...assignments.filter((item) => item.title.toLowerCase().includes(value)).map((item) => ({ group: "Assignments", label: item.title, to: `/${user?.role ?? "student"}/assignments` })),
     ].slice(0, 6);
   }, [query, user?.role]);

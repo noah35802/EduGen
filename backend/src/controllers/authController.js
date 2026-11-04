@@ -22,10 +22,18 @@ function toUserDTO(u) {
 async function register(req, res) {
   const { name, email, password, role = 'student', department } = req.body || {};
 
-  if (!name || !email || !password) {
+  if (
+    typeof name !== 'string' ||
+    typeof email !== 'string' ||
+    typeof password !== 'string' ||
+    !name.trim() ||
+    !email.trim() ||
+    !password
+  ) {
     return res.status(400).json({ error: 'name, email and password are required' });
   }
-  if (!EMAIL_RE.test(email)) {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!EMAIL_RE.test(normalizedEmail)) {
     return res.status(400).json({ error: 'invalid email format' });
   }
   if (password.length < 8 || password.length > 72) {
@@ -34,9 +42,7 @@ async function register(req, res) {
   if (!ALLOWED_SIGNUP_ROLES.includes(role)) {
     return res.status(400).json({ error: 'role must be student or teacher' });
   }
-
   try {
-    const normalizedEmail = email.trim().toLowerCase();
     if (await User.findByEmail(normalizedEmail)) {
       return res.status(409).json({ error: 'email already registered' });
     }
@@ -52,6 +58,9 @@ async function register(req, res) {
 
     return res.status(201).json({ token: signToken(user), user: toUserDTO(user) });
   } catch (err) {
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'email already registered' });
+    }
     console.error(err);
     return res.status(500).json({ error: 'server error' });
   }
@@ -60,7 +69,12 @@ async function register(req, res) {
 async function login(req, res) {
   const { email, password } = req.body || {};
 
-  if (!email || !password) {
+  if (
+    typeof email !== 'string' ||
+    typeof password !== 'string' ||
+    !email.trim() ||
+    !password
+  ) {
     return res.status(400).json({ error: 'email and password are required' });
   }
 
